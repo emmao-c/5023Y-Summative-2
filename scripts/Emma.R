@@ -33,3 +33,11 @@ probiotic %>%
 probiotic %>% 
   is.na() %>% 
   sum()
+
+#Changing gender to a factor 
+probiotic$gender <- as.factor(probiotic$gender)
+probiotic$group <- as.factor(probiotic$group)
+
+
+#probs <- select(.data = probiotic, 
+  #           sex,forewing_length, jun_mean, rain_jun)
