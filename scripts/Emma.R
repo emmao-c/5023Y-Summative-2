@@ -27,3 +27,9 @@ probiotic %>%
 
 probiotic %>% 
   distinct(sample)
+
+
+# checking for missing values
+probiotic %>% 
+  is.na() %>% 
+  sum()
