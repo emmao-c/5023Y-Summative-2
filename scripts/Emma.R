@@ -44,3 +44,12 @@ prob_sort <- probiotic %>%
   group_by(subject,gender,group)%>%
   summarise(abundance_before =ruminococcus_gnavus_abund[time ==1],
             abundance_after =ruminococcus_gnavus_abund[time==2])
+
+
+library(ggdist)
+prob_sort %>% 
+  drop_na(gender) %>% 
+  ggplot(aes(y = abundance_before,abundance_after
+             x = gender,
+             fill = gender))+
+  stat_halfeye()
