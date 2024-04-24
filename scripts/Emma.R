@@ -37,7 +37,10 @@ probiotic %>%
 #Changing gender to a factor 
 probiotic$gender <- as.factor(probiotic$gender)
 probiotic$group <- as.factor(probiotic$group)
+probiotic$time <- as.factor(probiotic$time)
 
 
-#probs <- select(.data = probiotic, 
-  #           sex,forewing_length, jun_mean, rain_jun)
+prob_sort <- probiotic %>%
+  group_by(subject,gender,group)%>%
+  summarise(abundance_before =ruminococcus_gnavus_abund[time ==1],
+            abundance_after =ruminococcus_gnavus_abund[time==2])
