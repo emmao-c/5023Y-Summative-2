@@ -1,9 +1,16 @@
-# Summative 2 BIO 5023Y
+# Invetsigation into the realtionship balh blah blah 
 
-## ✨ Brief introduction
-This is a solo project assignment for module BIO 5023Y - Data Science for Biologists. This assignment requires data cleaning, exploratory analysis, data visualisation & statistical model building and inference.
 
-*Change this README to represent your project when complete*
+##Packages Used:
+
+| Package | Purpose|
+|----|----|
+|tidyverse| For importing, tidying, presenting and manipulating data
+|ggplot2| Used for making complex plots from data frames 
+|janitor| simple tools for cleaning and examining data 
+|dplyr | Used for filtering, selecting columns, sorting data and adding and deleting columns 
+|emmeans| used to estimate marginal means 
+
 
 ## 🎯 Objectives
  
