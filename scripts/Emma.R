@@ -5,21 +5,24 @@ library(janitor)
 library(kableExtra)
 library(emmeans)
 library (GGally)
+library(performance)
+library(see)
+library(car)
 probiotic <- read_csv(here::here( "data", "probiotic.csv"))
 
-#___check the structure of the data--- 
+#___Check the structure of the data--- 
 glimpse(probiotic)
 
-#____check data is in a tidy format----- 
+#____Check data is in a tidy format----- 
 head(probiotic)
 
-#____ Check for duplcaited rows ---- 
+#____ Check for duplicated rows ---- 
 probiotic %>% 
   duplicated() %>% 
   sum()
 
 #Find number of rows
-nrow(prob_diff)
+nrow(probiotic)
 
 # check for typos by looking at distinct characters/values
 probiotic %>% 
@@ -103,16 +106,30 @@ ggsave("figures/boxplot_of_groups_abundance_before.png", dpi=300)
                        position = "identity",
                        colour="black")
       
+
       
-lsmodel0 <- lm(formula = abund_diff  ~ 1, data = prob_diff)
-summary(lsmodel0)
-
-lsmodel1<- lm(abund_diff ~ group, data= prob_diff)
+      
+      
+      
+#___Constructing models ------   
+      
+model1<- lm(abund_diff ~ group + gender, data= prob_diff)
 summary(lsmodel1)
-anova (lsmodel1)
+plot(model1)
+performance::check_model(model1, detrend = F)
 
-GGally::ggpairs(prob_diff,
-                aes(colour = group))
+model2<- lm(abund_diff ~  gender, data= prob_diff)
+summary(model2)
+
+model3 <- lm(abund_diff ~  gender, data= prob_diff)
+summary(model3)
+
+model4 <- lm(abund ~ type + factor(pair), data = darwin) %>% 
+  broom::tidy(., conf.int=T) %>% 
+  slice(2:2) %>% 
+  mutate(model="paired")
+
+
 
 
 prob_no_sub <- prob_diff %>%
@@ -121,7 +138,9 @@ prob_no_sub <- prob_diff %>%
             abundance_after =ruminococcus_gnavus_abund[time==2])
 
 
-
+lsmodel1<- lm(abund_diff ~ abun, data= prob_diff)
+summary(lsmodel1)
+anova (lsmodel1)
 
 
 
