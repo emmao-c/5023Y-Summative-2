@@ -8,23 +8,25 @@ library (GGally)
 library(performance)
 library(see)
 library(car)
+
+#___Importing data---
 probiotic <- read_csv(here::here( "data", "probiotic.csv"))
 
 #___Check the structure of the data--- 
 glimpse(probiotic)
 
-#____Check data is in a tidy format----- 
+#___Check data is in a tidy format---
 head(probiotic)
 
-#____ Check for duplicated rows ---- 
+#___Check for duplicated rows ---
 probiotic %>% 
   duplicated() %>% 
   sum()
 
-#Find number of rows
+#___Find number of rows---
 nrow(probiotic)
 
-# check for typos by looking at distinct characters/values
+#___Check for typos by looking at distinct characters/values---
 probiotic %>% 
   distinct(gender)
 
@@ -40,7 +42,7 @@ probiotic %>%
   is.na() %>% 
   sum()
 
-#Changing gender to a factor 
+#___Changing gender,group and time to a factor--- 
 probiotic$gender <- as.factor(probiotic$gender)
 probiotic$group <- as.factor(probiotic$group)
 probiotic$time <- as.factor(probiotic$time)
@@ -55,41 +57,8 @@ prob_diff <- prob_sort %>%
   select(subject, gender, group,abundance_after,abundance_before)%>%
   mutate(abund_diff = abundance_after - abundance_before )
 
-#____Mono variate analysis-----  
-
-#Boxplot of the groups against the abundance after   
-ggplot(data = prob_diff, aes(x = group, y = abundance_after)) +
-  geom_boxplot(aes(fill = gender),
-               alpha = 0.7, 
-               width = 0.5, # change width of boxplot
-               show.legend = TRUE)
-
-# OUTPUT FIGURE TO FILE
-
-ggsave("figures/boxplot_of_groups_abundance_after.png", dpi=300)
-
-#Boxplot of the groups against the abundance before   
-
-        ggplot(data = prob_diff, aes(x = group, y = abundance_before)) +
-  geom_boxplot(aes(fill = gender),
-               alpha = 0.7, 
-               width = 0.5, # change width of boxplot
-               show.legend = TRUE)
-# OUTPUT FIGURE TO FILE
-        
-ggsave("figures/boxplot_of_groups_abundance_before.png", dpi=300)
-
-#Boxplot of the groups against the the difference in abundance    
-        
-      ggplot(data = prob_diff, aes(x = group, y = abund_diff)) +
-  geom_boxplot(aes(fill = gender),
-                       alpha = 0.7, 
-                       width = 0.5, # change width of boxplot
-                       show.legend = TRUE) 
-# OUTPUT FIGURE TO FILE
-      
-ggsave("figures/boxplot_of_groups_abundance_before.png", dpi=300)
-# Histogram showing the group values and the difference       
+#____Univariate analysis-----  
+#___Histogram showing the group values and the abundance before---  
       prob_diff %>% 
         ggplot(aes(x=abundance_before))+
         geom_histogram(bins=30, 
@@ -97,7 +66,9 @@ ggsave("figures/boxplot_of_groups_abundance_before.png", dpi=300)
                            fill=group), 
                        position = "identity",
                        colour="black")
-      
+
+#___Histogram showing the group values and the abundance after --  
+
       prob_diff %>% 
         ggplot(aes(x=abundance_after))+
         geom_histogram(bins=30, 
@@ -109,14 +80,14 @@ ggsave("figures/boxplot_of_groups_abundance_before.png", dpi=300)
 
       
       
-      
-      
-#___Constructing models ------   
+#___Constructing models for analysis of data---   
       
 model1<- lm(abund_diff ~ group + gender, data= prob_diff)
-summary(lsmodel1)
+summary(model1)
 plot(model1)
 performance::check_model(model1, detrend = F)
+
+
 
 model2<- lm(abund_diff ~  gender, data= prob_diff)
 summary(model2)
@@ -132,15 +103,8 @@ model4 <- lm(abund ~ type + factor(pair), data = darwin) %>%
 
 
 
-prob_no_sub <- prob_diff %>%
-  group_by(gender,group,abundance_after,abundance_before,)%>%
-  summarise(abundance_before =ruminococcus_gnavus_abund[time ==1],
-            abundance_after =ruminococcus_gnavus_abund[time==2])
 
 
-lsmodel1<- lm(abund_diff ~ abun, data= prob_diff)
-summary(lsmodel1)
-anova (lsmodel1)
 
 
 
