@@ -8,7 +8,7 @@ library (GGally)
 library(performance)
 library(see)
 library(car)
-
+library(rstatix)
 #___Importing data---
 probiotic <- read_csv(here::here( "data", "probiotic.csv"))
 
@@ -67,6 +67,54 @@ prob_diff <- prob_sort %>%
   mutate(abund_diff = abundance_after - abundance_before )
 glimpse(prob_diff)
 
+#___ Checking whether the groups are equally weighted --- 
+prob_diff %>%
+  group_by(group) %>%
+  summarise(n = n())
+
+#___ Checking whether the gender and group are equally weighted --- 
+
+prob_diff %>% 
+  group_by(group, gender) %>% 
+  summarise(n = n()) %>% 
+  mutate(prob_diff = n/sum(n))
+
+prob_diff%>% 
+  ggplot(aes(x=group, fill=gender))+
+  geom_bar(position=position_dodge2(preserve="single"))+ 
+  #keeps bars to appropriate widths
+  coord_flip()
+
+group_gender_summary <- prob_diff %>% 
+  group_by(group, gender) %>% 
+  summarise(n=n(),
+            n_distinct=n_distinct(subject)) %>% 
+  ungroup() %>% # needed to remove group calculations
+  mutate(freq=n/sum(n)) # then calculates percentage of each group across WHOLE dataset
+
+group_gender_summary
+
+group_gender_summary_graph <- prob_diff %>% 
+  ggplot(aes(x=group, fill=gender))+
+  geom_bar(position=position_dodge2(preserve="single"))+ 
+  #keeps bars to appropriate widths
+  labs(x="Group",
+       y = "Abundance of pathogenic bacteria")+
+  geom_text(data = group_gender_summary, # use the data from the summarise object
+            aes(x=group,
+                y= n+10, # offset text to be slightly to the right of bar
+                group=gender, # need species group to separate text
+                label=scales::percent(freq) # automatically add %
+            ),
+            position=position_dodge2(width=0.8))+ # set width of dodge
+  scale_fill_manual(values=c("cyan",
+                             "purple"
+  ))+
+  coord_flip()+
+  theme_minimal()+
+  theme(legend.position="bottom") # put legend at the bottom of the graph
+
+
 #____Univariate analysis-----  
 #___Histogram showing the distribution of the abundance before the two treatments---  
 
@@ -78,9 +126,35 @@ hist(prob_diff$abundance_after)
 #___Histogram showing distribution of the difference in abundance---  
 hist(prob_diff$abund_diff)
 
+#___Scatter plot to show the abundance difference seperated by group and gender ---
+ggplot(prob_diff, aes(x = group,
+                            y = abund_diff))+
+  geom_point(alpha = 0.4,
+             aes(colour = gender))+
+  scale_color_brewer(palette = "Dark2")+
+  theme_light()
+#___Scatter plot to show the abundance before seperated by group and gender ---
+
+ggplot(prob_diff, aes(x = group,
+                      y = abundance_before))+
+  geom_point(alpha = 0.4,
+             aes(colour = gender))+
+  scale_color_brewer(palette = "Dark2")+
+  theme_light()
+#___Scatter plot to show the abundance after seperated by group and gender ---
+
+ggplot(prob_diff, aes(x = group,
+                      y = abundance_after))+
+  geom_point(alpha = 0.4,
+             aes(colour = gender))+
+  scale_color_brewer(palette = "Dark2")+
+  theme_light()
 
 
-      
+
+
+
+ 
 
 #___Constructing models for analysis of data---   
       
