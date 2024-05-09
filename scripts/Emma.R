@@ -40,10 +40,15 @@ probiotic %>%
   distinct(sample)
 
 
-#___Checking for missing values---                
+#___Checking for missing values and typos---                
 probiotic %>% 
   is.na() %>% 
   sum()
+
+unique(probiotic$group)
+unique(probiotic$sample)
+unique(probiotic$subject)
+unique(probiotic$gender)
 
 #___Changing gender,group and time to a factor--- 
 probiotic$gender <- as.factor(probiotic$gender)
@@ -63,15 +68,17 @@ prob_diff <- prob_sort %>%
 glimpse(prob_diff)
 
 #____Univariate analysis-----  
-#___Histogram showing the group values and the abundance before---  
+#___Histogram showing the distribution of the abundance before the two treatments---  
 
 hist(prob_diff$abundance_before)
 
-#___Histogram showing the group values and the abundance after --  
+#___Histogram showing the distribution of the abundance after the two treatments---  
 hist(prob_diff$abundance_after)
 
-#___Histogram showing distribution of the difference in abundance  --  
+#___Histogram showing distribution of the difference in abundance---  
 hist(prob_diff$abund_diff)
+
+
 
       
 
