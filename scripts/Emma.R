@@ -9,6 +9,8 @@ library(performance)
 library(see)
 library(car)
 library(rstatix)
+library(corrplot)
+library(lmtest)
 #___Importing data---
 probiotic <- read_csv(here::here( "data", "probiotic.csv"))
 
@@ -152,10 +154,6 @@ ggplot(prob_diff, aes(x = group,
 
 
 
-
-
- 
-
 #___Constructing models for analysis of data---   
       
 model1<- lm(abund_diff ~ group + gender, data= prob_diff)
@@ -164,17 +162,36 @@ plot(model1)
 performance::check_model(model1, detrend = F)
 
 
-
-model2<- lm(abund_diff ~  gender, data= prob_diff)
+model2<- lm(abundance_before ~  group + gender, data= prob_diff)
 summary(model2)
 
-model3 <- lm(abund_diff ~  gender, data= prob_diff)
+model3 <- lm(abundance_after ~  group + gender, data= prob_diff)
 summary(model3)
 
+#___ Using Cooks distance model to identify the outlier effects---
+plot(model1, which = c(4,4))
+plot(model2, which = c(4,4))
+plot(model3, which = c(4,4))
+
+#___ Seeing if there is significant leverage from the outlier found in the Cooks test ---
+prob_diff [14,]
+
+model4 <- lm(abund_diff ~ group + gender, data= prob_diff[-14,])
+summary(model4)
+performance::check_model(model4, detrend = F)
 
 
+#___Breusch Pagan test --- 
+lmtest::bptest(model4)
+
+#___ Shapiro wilks test, the residuals do not significantly deviate --- 
+shapiro.test(residuals(model4))
+
+car::qqPlot(model4) # adds a confidence interval check
 
 
+car::boxCox(model2)
+car::boxCox(model3)
 
 
 
