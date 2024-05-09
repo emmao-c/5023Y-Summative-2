@@ -1,7 +1,8 @@
-# Invetsigation into the realtionship balh blah blah 
+# Invetsigation into the relationship balh blah blah 
 
 
-##Packages Used:
+
+### Packages Used:
 
 | Package | Purpose|
 |----|----|
