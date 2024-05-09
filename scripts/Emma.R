@@ -65,22 +65,16 @@ glimpse(prob_diff)
 #____Univariate analysis-----  
 #___Histogram showing the group values and the abundance before---  
 
-prob_diff%>%
-  hist(abundance_before$group)
+hist(prob_diff$abundance_before)
 
 #___Histogram showing the group values and the abundance after --  
+hist(prob_diff$abundance_after)
 
-      prob_diff %>% 
-        ggplot(aes(x=abundance_after))+
-        geom_histogram(bins=30, 
-                       aes(y=..density..,
-                           fill=group), 
-                       position = "identity",
-                       colour="black")
-      
+#___Histogram showing distribution of the difference in abundance  --  
+hist(prob_diff$abund_diff)
 
       
-      
+
 #___Constructing models for analysis of data---   
       
 model1<- lm(abund_diff ~ group + gender, data= prob_diff)
