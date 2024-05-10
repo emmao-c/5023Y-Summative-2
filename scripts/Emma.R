@@ -176,6 +176,7 @@ plot(model3, which = c(4,4))
 #___ Seeing if there is significant leverage from the outlier found in the Cooks test ---
 prob_diff [14,]
 
+#___ maybe run a frop variable --- 
 model4 <- lm(abund_diff ~ group + gender, data= prob_diff[-14,])
 summary(model4)
 performance::check_model(model4, detrend = F)
@@ -195,6 +196,10 @@ car::boxCox(model3)
 
 
 
+## Summarise model===
 
+model_sum <- emmeans::emmeans(model_2, specs = ~jun_mean + sex,
+                              at =list(jun_mean = c(11.8, 16.4))) %>% 
+  as_tibble()
 
 
