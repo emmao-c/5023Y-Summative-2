@@ -143,6 +143,7 @@ ggplot(prob_diff, aes(x = group,
              aes(colour = gender))+
   scale_color_brewer(palette = "Dark2")+
   theme_light()
+
 #___Scatter plot to show the abundance after seperated by group and gender----
 
 ggplot(prob_diff, aes(x = group,
@@ -153,7 +154,6 @@ ggplot(prob_diff, aes(x = group,
   theme_light()
 
 
-
 #___Constructing models for analysis of data----   
       
 model1<- lm(abund_diff ~ group + gender, data= prob_diff)
@@ -162,7 +162,7 @@ plot(model1)
 performance::check_model(model1, detrend = F)
 
 
-model2<- lm(abundance_before ~  group + gender, data= prob_diff)
+model2<- lm(abundance_before ~  group , data= prob_diff)
 summary(model2)
 
 model3 <- lm(abundance_after ~  group + gender, data= prob_diff)
@@ -181,10 +181,10 @@ model4 <- lm(abund_diff ~ group + gender, data= prob_diff[-14,])
 summary(model4)
 performance::check_model(model4, detrend = F)
 
-
 #___ Investigating possible interaction effect----
 
 model5 <- lm(abund_diff ~ group + gender + group:gender , data= prob_diff[-14,])
+summary(model5)
 
 #___Breusch Pagan test---- 
 lmtest::bptest(model4)
@@ -198,20 +198,28 @@ car::boxCox(model2)
 car::boxCox(model3)
 
 
-
-summary(model5)
-## Summarise mode----
+## Summarise model----
 
 
 drop1(model4, test = "F")
 
 #___Finding the minimum and maximum values for diffference in abundance in the dataset ----
-print(max(prob_diff$abund_diff)) 
-print(min(prob_diff$abund_diff)) 
+print(max(prob_diff$abund_diff[-14])) 
+print(min(prob_diff$abund_diff[-14])) 
 
 #___ Model summary of model 4 investigating----
 model_sum <- emmeans::emmeans(model4, specs = ~ group + gender,
-                              at =list(abund_diff = c(-337, 196))) %>% 
+                              at =list(abund_diff = c(-141, 196))) %>% 
   as_tibble()
+summary(model_sum)
+
+#___ Paired T-test investigating the effect of treatment---- 
+
+treatment_test <- lm(ruminococcus_gnavus_abund ~ group + factor (subject), data = probiotic)
+summary(treatment_test)
+broom::tidy (treatment_test, conf.int = T, conf.level = 0.95)
+
+GGally::ggcoef_model(treatment_test,show_p_values = FALSE,conf.level = 0.95)
+
 
 
