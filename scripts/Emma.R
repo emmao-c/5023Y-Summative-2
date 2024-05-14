@@ -11,27 +11,27 @@ library(car)
 library(rstatix)
 library(corrplot)
 library(lmtest)
-#___Importing data---
+#___Importing data------
 probiotic <- read_csv(here::here( "data", "probiotic.csv"))
 
-#___Check the structure of the data--- 
+#___Check the structure of the data-----
 glimpse(probiotic)
 
-#___Check data is in a tidy format---
+#___Check data is in a tidy format-----
 head(probiotic)
 
-#___Check for duplicated rows ---
+#___Check for duplicated rows------
 probiotic %>% 
   duplicated() %>% 
   sum()
 
-#___Find number of rows---
+#___Find number of rows------
 nrow(probiotic)
 
-#___Checking column names---
+#___Checking column names------
 colnames(probiotic)
 
-#___Check for typos by looking at distinct characters/values---
+#___Check for typos by looking at distinct characters/values-----
 probiotic %>% 
   distinct(gender)
 
@@ -42,7 +42,7 @@ probiotic %>%
   distinct(sample)
 
 
-#___Checking for missing values and typos---                
+#___Checking for missing values and typos------                
 probiotic %>% 
   is.na() %>% 
   sum()
@@ -52,29 +52,29 @@ unique(probiotic$sample)
 unique(probiotic$subject)
 unique(probiotic$gender)
 
-#___Changing gender,group and time to a factor--- 
+#___Changing gender,group and time to a factor------
 probiotic$gender <- as.factor(probiotic$gender)
 probiotic$group <- as.factor(probiotic$group)
 probiotic$time <- as.factor(probiotic$time)
 
-#___Piping probiotic dataset into new set seperating the values for number bacteria present into abundance before and after--- 
+#___Piping probiotic dataset into new set seperating the values for number bacteria present into abundance before and after----- 
 prob_sort <- probiotic %>%
   group_by(subject,gender,group)%>%
   summarise(abundance_before =ruminococcus_gnavus_abund[time ==1],
             abundance_after =ruminococcus_gnavus_abund[time==2])
 
-#___Piping probiotic dataset into new set adding a column showing the difference in abundance 
+#___Piping probiotic dataset into new set adding a column showing the difference in abundance---- 
 prob_diff <- prob_sort %>%
   select(subject, gender, group,abundance_after,abundance_before)%>%
   mutate(abund_diff = abundance_after - abundance_before )
 glimpse(prob_diff)
 
-#___ Checking whether the groups are equally weighted --- 
+#___ Checking whether the groups are equally weighted----- 
 prob_diff %>%
   group_by(group) %>%
   summarise(n = n())
 
-#___ Checking whether the gender and group are equally weighted --- 
+#___ Checking whether the gender and group are equally weighted---- 
 
 prob_diff %>% 
   group_by(group, gender) %>% 
@@ -118,24 +118,24 @@ group_gender_summary_graph <- prob_diff %>%
 
 
 #____Univariate analysis-----  
-#___Histogram showing the distribution of the abundance before the two treatments---  
+#___Histogram showing the distribution of the abundance before the two treatments----  
 
 hist(prob_diff$abundance_before)
 
-#___Histogram showing the distribution of the abundance after the two treatments---  
+#___Histogram showing the distribution of the abundance after the two treatments---- 
 hist(prob_diff$abundance_after)
 
-#___Histogram showing distribution of the difference in abundance---  
+#___Histogram showing distribution of the difference in abundance---- 
 hist(prob_diff$abund_diff)
 
-#___Scatter plot to show the abundance difference seperated by group and gender ---
+#___Scatter plot to show the abundance difference seperated by group and gender----
 ggplot(prob_diff, aes(x = group,
                             y = abund_diff))+
   geom_point(alpha = 0.4,
              aes(colour = gender))+
   scale_color_brewer(palette = "Dark2")+
   theme_light()
-#___Scatter plot to show the abundance before seperated by group and gender ---
+#___Scatter plot to show the abundance before seperated by group and gender----
 
 ggplot(prob_diff, aes(x = group,
                       y = abundance_before))+
@@ -143,7 +143,7 @@ ggplot(prob_diff, aes(x = group,
              aes(colour = gender))+
   scale_color_brewer(palette = "Dark2")+
   theme_light()
-#___Scatter plot to show the abundance after seperated by group and gender ---
+#___Scatter plot to show the abundance after seperated by group and gender----
 
 ggplot(prob_diff, aes(x = group,
                       y = abundance_after))+
@@ -154,7 +154,7 @@ ggplot(prob_diff, aes(x = group,
 
 
 
-#___Constructing models for analysis of data---   
+#___Constructing models for analysis of data----   
       
 model1<- lm(abund_diff ~ group + gender, data= prob_diff)
 summary(model1)
@@ -168,38 +168,50 @@ summary(model2)
 model3 <- lm(abundance_after ~  group + gender, data= prob_diff)
 summary(model3)
 
-#___ Using Cooks distance model to identify the outlier effects---
+#___ Using Cooks distance model to identify the outlier effects----
 plot(model1, which = c(4,4))
 plot(model2, which = c(4,4))
 plot(model3, which = c(4,4))
 
-#___ Seeing if there is significant leverage from the outlier found in the Cooks test ---
+#___ Seeing if there is significant leverage from the outlier found in the Cooks test----
 prob_diff [14,]
 
-#___ maybe run a frop variable --- 
+#___ Dropping the suspected outlier from the model 1 equivalent---- 
 model4 <- lm(abund_diff ~ group + gender, data= prob_diff[-14,])
 summary(model4)
 performance::check_model(model4, detrend = F)
 
 
-#___Breusch Pagan test --- 
+#___ Investigating possible interaction effect----
+
+model5 <- lm(abund_diff ~ group + gender + group:gender , data= prob_diff[-14,])
+
+#___Breusch Pagan test---- 
 lmtest::bptest(model4)
 
-#___ Shapiro wilks test, the residuals do not significantly deviate --- 
+#___ Shapiro Wilks test, the residuals do not significantly deviate---- 
 shapiro.test(residuals(model4))
 
-car::qqPlot(model4) # adds a confidence interval check
-
+car::qqPlot(model4)
 
 car::boxCox(model2)
 car::boxCox(model3)
 
 
 
-## Summarise model===
+summary(model5)
+## Summarise mode----
 
-model_sum <- emmeans::emmeans(model_2, specs = ~jun_mean + sex,
-                              at =list(jun_mean = c(11.8, 16.4))) %>% 
+
+drop1(model4, test = "F")
+
+#___Finding the minimum and maximum values for diffference in abundance in the dataset ----
+print(max(prob_diff$abund_diff)) 
+print(min(prob_diff$abund_diff)) 
+
+#___ Model summary of model 4 investigating----
+model_sum <- emmeans::emmeans(model4, specs = ~ group + gender,
+                              at =list(abund_diff = c(-337, 196))) %>% 
   as_tibble()
 
 
