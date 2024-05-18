@@ -70,24 +70,24 @@ prob_diff <- prob_sort %>%
 glimpse(prob_diff)
 
 #___ Checking whether the groups are equally weighted----- 
-prob_diff %>%
+prob_diff [-14,] %>%
   group_by(group) %>%
   summarise(n = n())
 
 #___ Checking whether the gender and group are equally weighted---- 
 
-prob_diff %>% 
+prob_diff [-14,] %>% 
   group_by(group, gender) %>% 
   summarise(n = n()) %>% 
   mutate(prob_diff = n/sum(n))
 
-prob_diff%>% 
+prob_diff [-14,] %>% 
   ggplot(aes(x=group, fill=gender))+
   geom_bar(position=position_dodge2(preserve="single"))+ 
   #keeps bars to appropriate widths
   coord_flip()
 
-group_gender_summary <- prob_diff %>% 
+group_gender_summary <- prob_diff [-14,] %>% 
   group_by(group, gender) %>% 
   summarise(n=n(),
             n_distinct=n_distinct(subject)) %>% 
@@ -96,7 +96,7 @@ group_gender_summary <- prob_diff %>%
 
 group_gender_summary
 
-group_gender_summary_graph <- prob_diff %>% 
+group_gender_summary_graph <- prob_diff [-14,] %>% 
   ggplot(aes(x=group, fill=gender))+
   geom_bar(position=position_dodge2(preserve="single"))+ 
   #keeps bars to appropriate widths
@@ -104,7 +104,7 @@ group_gender_summary_graph <- prob_diff %>%
        y = "Abundance of pathogenic bacteria")+
   geom_text(data = group_gender_summary, # use the data from the summarise object
             aes(x=group,
-                y= n+10, # offset text to be slightly to the right of bar
+                y= n+1, # offset text to be slightly to the right of bar
                 group=gender, # need species group to separate text
                 label=scales::percent(freq) # automatically add %
             ),
@@ -165,8 +165,11 @@ performance::check_model(model1, detrend = F)
 model2<- lm(abundance_before ~  group , data= prob_diff)
 summary(model2)
 
-model3 <- lm(abundance_after ~  group + gender, data= prob_diff)
+model3 <- lm(abundance_after ~  group , data= prob_diff)
 summary(model3)
+
+model6 <- lm(abund_diff ~ group , data = prob_diff [-14,])
+summary(model6)
 
 #___ Using Cooks distance model to identify the outlier effects----
 plot(model1, which = c(4,4))
@@ -198,10 +201,14 @@ car::boxCox(model2)
 car::boxCox(model3)
 
 
-## Summarise model----
+## Summarise model and testing for interaction effect----
+model5a <- lm(abund_diff ~ group + gender,
+              data = prob_diff[-14,])
 
+drop1(model5a, test = "F")
 
-drop1(model4, test = "F")
+anova(model5a, model5)
+
 
 #___Finding the minimum and maximum values for diffference in abundance in the dataset ----
 print(max(prob_diff$abund_diff[-14])) 
@@ -213,13 +220,25 @@ model_sum <- emmeans::emmeans(model4, specs = ~ group + gender,
   as_tibble()
 summary(model_sum)
 
+
+#___ Removing outlier values from the original dataset ---- 
+probiotic1 <- probiotic [-41,]
+probiotic3 <- probiotic1 [-41,]
+
+
 #___ Paired T-test investigating the effect of treatment---- 
 
-treatment_test <- lm(ruminococcus_gnavus_abund ~ group + factor (subject), data = probiotic)
+treatment_test <- lm(ruminococcus_gnavus_abund ~ group + factor (subject), data = probiotic3)
 summary(treatment_test)
 broom::tidy (treatment_test, conf.int = T, conf.level = 0.95)
 
+confint(treatment_test)
 GGally::ggcoef_model(treatment_test,show_p_values = FALSE,conf.level = 0.95)
+
+
+#___ Independant t-test to investigate effectiveness of treatment ---- 
+
+summary(model6)
 
 
 
