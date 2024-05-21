@@ -100,7 +100,7 @@ group_gender_summary_graph <- prob_diff [-14,] %>%
   ggplot(aes(x=group, fill=gender))+
   geom_bar(position=position_dodge2(preserve="single"))+ 
   #keeps bars to appropriate widths
-  labs(x="Group",
+  labs(x="Treatment group",
        y = "Abundance of pathogenic bacteria")+
   geom_text(data = group_gender_summary, # use the data from the summarise object
             aes(x=group,
@@ -109,13 +109,17 @@ group_gender_summary_graph <- prob_diff [-14,] %>%
                 label=scales::percent(freq) # automatically add %
             ),
             position=position_dodge2(width=0.8))+ # set width of dodge
-  scale_fill_manual(values=c("cyan",
+  scale_fill_manual(values=c("green4",
                              "purple"
-  ))+
+  ),labels = c("Female", "Male"), name = c("Gender"))+
   coord_flip()+
   theme_minimal()+
-  theme(legend.position="bottom") # put legend at the bottom of the graph
+  theme(legend.position="bottom",text = element_text(size = 9),element_line(size =1))+
+  ggtitle(label = "Distribution of each gender within each treatment group",
+                                         subtitle = "From a total of 21 stool samples, in order to investigate a possible sampling bias") # put legend at the bottom of the graph
+# OUTPUT FIGURE TO FILE
 
+ggsave("figures/group_gender_summary_graph.png", dpi=350)
 
 #____Univariate analysis-----  
 #___Histogram showing the distribution of the abundance before the two treatments----  
@@ -240,5 +244,14 @@ GGally::ggcoef_model(treatment_test,show_p_values = FALSE,conf.level = 0.95)
 
 summary(model6)
 
+#___ Investigating effect of gender 
+
+before_model <- lm(abundance_before ~  gender , data= prob_diff)
+summary(before_model)
+after_model <- lm(abundance_after ~  gender , data= prob_diff)
+summary(after_model)
+diff_model  <- lm(abund_diff ~  gender , data= prob_diff)
+summary(diff_model)
 
 
+#___ Figure showing before and after treatment sorted into LGG and 
