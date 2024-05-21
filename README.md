@@ -3,7 +3,7 @@
 ### Packages Used:
 
 | Package     | Purpose                                                                                                             |
-|------------------------------------|------------------------------------|
+|-------------|---------------------------------------------------------------------------------------------------------------------|
 | tidyverse   | For importing, tidying, presenting and manipulating data                                                            |
 | ggplot2     | Used for making complex plots from data frames                                                                      |
 | janitor     | simple tools for cleaning and examining data                                                                        |
