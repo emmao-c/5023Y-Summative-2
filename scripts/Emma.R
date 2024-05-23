@@ -11,7 +11,7 @@ library(car)
 library(rstatix)
 library(corrplot)
 library(lmtest)
-library(gghighlight)
+
 #___Importing data------
 probiotic <- read_csv(here::here( "data", "probiotic.csv"))
 
