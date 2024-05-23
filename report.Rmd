@@ -1,0 +1,38 @@
+---
+title: "Assessing the efficacy of the probiotic *Lactobacillus rhamnosus* in its ability to moderate the number of the pathogenic bacteria *Ruminococcus gnavus* found in the small intestine. "
+author: "100354624"
+date: "2024-05-21"
+output: pdf_document
+references: references.bib
+---
+
+``` {r, include = FALSE, echo = FALSE, warning=FALSE, eval=TRUE}
+library(tidyverse)
+library(here)
+library(janitor)
+library(kableExtra)
+library(emmeans)
+library (GGally)
+library(performance)
+library(see)
+library(car)
+library(rstatix)
+library(corrplot)
+library(lmtest)
+library(gghighlight)
+```
+
+
+```{r, include =TRUE, echo = FALSE,message=FALSE , eval=TRUE}
+
+ #____Read the data --- 
+
+probiotic <- read_csv ("/cloud/project/data/probiotic.csv")
+
+```
+
+# **Introduction**
+Probiotics are microorganisms that are live and non-pathogenic, they are commonly given to patients who have abnormalities in their gut flora, they have been of great clinical significance in recent years due to their proposed abilities to improve microbial balance [@williams2010probiotics]. The human gastrointestinal tract harbours an extensive population of microorganisms that work symbiotically to maintain its host in a healthy environment in order to maintain homeostasis and prevent disease [@thursby2017introduction].  Research into probiotics is a vital strand of medical discovery as it offers a method of treating, especially gastrointestinal, disorders that can be produced on a very large scale and are able to become widely accessible to the public [@azad2018probiotic] This dataset explores the effects of probiotics on the abundance of pathogenic bacteria found in the human intestinal tract, a placebo was also used as a control group. The probiotic in question is *Lactobacillus rhamnosus* which is a very widely used strain that has been well documented in successfully treating gastrointestinal infections, it is capable of surviving the harsh low pH conditions found in the stomach, with the abilities to exhibit high levels of adhesion in the epithelial lining which allows for it to act as a balance against unwanted pathogens [@segers2014towards]. This study is investigating the ability of L rhamnosus to mediate *Ruminococcus gnavus*, a gram positive bacteria that very readily colonises the human gut that can cause a multitude of difference pathologies ranging from gastrointestinal issues to neurological disorders([@crost2023ruminococcus.@henke2019ruminococcus]. This is why it is so important that we are able to find products the moderate the presence of this bacteria in order to combat its negative side affects when abundance is high. This study investigates this ability of LGG to moderate the growth of *R gnavus*. 
+
+
+
