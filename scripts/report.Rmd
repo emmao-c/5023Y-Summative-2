@@ -1,0 +1,93 @@
+---
+title: "Assessing the efficacy of the probiotic *Lactobacillus rhamnosus* in its ability to moderate the number of the pathogenic bacteria *Ruminococcus gnavus* found in the small intestine. "
+author: "100354624"
+date: "2024-05-21"
+output: pdf_document
+bibliography: reference.bib
+---
+
+```{r, include = FALSE, echo = FALSE, warning=FALSE, eval=TRUE,message=FALSE}
+library(tidyverse)
+library(here)
+library(janitor)
+library(kableExtra)
+library(emmeans)
+library (GGally)
+library(performance)
+library(see)
+library(car)
+library(rstatix)
+library(corrplot)
+library(lmtest)
+library(gghighlight)
+```
+
+```{r, include=TRUE, echo =FALSE, warning=FALSE, eval=TRUE, message=FALSE}
+
+ #____Read the data --- 
+
+probiotic <- read_csv ("/cloud/project/data/probiotic.csv")
+
+```
+
+# Introduction
+
+Probiotics are microorganisms that are live and non-pathogenic, they are commonly given to patients who have abnormalities in their gut flora, they have been of great clinical significance in recent years due to their proposed abilities to improve microbial balance [@williams2010probiotics] . The human gastrointestinal tract harbours an extensive population of microorganisms that work symbiotically to maintain its host in a healthy environment in order to maintain homeostasis and prevent disease [@thursby2017introduction]. Research into probiotics is a vital strand of medical discovery as it offers a method of treating, especially gastrointestinal, disorders that can be produced on a very large scale and are able to become widely accessible to the public [ @azad2018probiotic ] This dataset explores the effects of probiotics on the abundance of pathogenic bacteria found in the human intestinal tract, a placebo was also used as a control group. The probiotic in question is *Lactobacillus rhamnosus* which is a very widely used strain that has been well documented in successfully treating gastrointestinal infections, it is capable of surviving the harsh low pH conditions found in the stomach, with the abilities to exhibit high levels of adhesion in the epithelial lining which allows for it to act as a balance against unwanted pathogens [@segers2014towards]. This study is investigating the ability of *L rhamnosus* to mediate *Ruminococcus gnavus*, a gram positive bacteria that very readily colonises the human gut that can cause a multitude of difference pathologies ranging from gastrointestinal issues to neurological disorders([@crost2023ruminococcus, @henke2019ruminococcus]. This is why it is is of vital important that we are able to find products that moderate the presence of this bacteria in order to combat its negative side affects when its abundance is high. This study investigates this ability of LGG to moderate the growth of *R gnavus* and further analyse statistically what difference it makes.
+
+# Analysis:
+
+The data cleaning process was conducted using the packages tidyverse and janitor and then the data was then further sorted using the packages tidyr and dplyr to ensure that everything was accurate and conducive for analysis [@wickham2017package, @firke2021simple, @wickham2017package, @yarberry2021dplyr]. I used an ordinary least squares linear model to analyse the difference in the number pathogenic bacteria found in the small intestine in a factorial design with the two groups, one being treatment of probiotic L rhamnosus and the other a placebo control group, as categorical predictors. To initially conduct monovariate and multivariate analysis I used histograms to identify general points for exploratory analysis using the package ggplot in order visualise the data. The best fitting model to explain the difference in R gnavus did not include the interaction term found between the variables gender and group. The data did not require transformation however there was an outlier identified, subject 21, then to investigate the impact it had on the data and whether it should be redacted I used a Cooks distance model in order to identify the leverage it had on the dataset overall. A summary of these investigations led me to remove the datapoint from the dataset as it was causing an influential effect on the data and thus allowed for more meaningful results.
+
+# Results and Discussion
+
+## The effect of gender on *L.rhamnonus* treatment.
+
+I originally hypothesised that females respond more efficiently to treatment using L.rhamnonus measured using the difference in levels of *Ruminococcus gnavus*, meaning that they have an overall greater net reduction in the pathogenic bacteria. To test this hypothesis I used an ordinary of least squares (OLS) linear model to compare the change in abundance of *R gnavus* between males and females who were treated with LGG. This analysis showed that females have a smaller difference in abundance with after treatment than the males (t20=0.751, [95% CI: -71.3, 151], p = 0.462), with males exhibiting on average. However there could be a slight sampling bias as only two male and four female samples were treated using LGG compared to the group treated using the placebo (Figure 1).
+
+
+```{r, include=TRUE, echo =FALSE, warning=FALSE, eval=TRUE, message=FALSE,results=FALSE}
+
+source("/cloud/project/scripts/figure_1.R")
+
+```
+
+**Figure 1:** The number of samples of each gender sorted by method of treatment, the percentages show the overall proportion of the entire dataset. The possible bias shown in the fewer male samples taken (9.5%).
+
+
+## The effect of treatment on abundance of *Ruminococcus gnavus*.
+
+I hypothesised that there is a higher abundance of pathogenic bacteria in the samples that were placebo than those treated with L rhamnosus, this is because LGG has been shown on multiple occasions as being effective in its ability to aid the gastrointestinal system in defending from pathogenic bacteria [@capurso2019thirty]. To test this I conducted an independant t test based on a general linear model with treatment of placebo or LGG as a factorial predictor variable against the number of pathogenic bacteria inhabiting the samples, by comparing the count before and after treatment with one of the two groups it shows whether it had a positive or negative effect. In the samples treated with *L rhamnosus* there was an overall greater slight increase in the numbers of R gnavus (t5= 3.100 , [CI: 0.188, 2.01], p=0.027). The group treated with the placebo also expressed an increase in *R gnavus* (t~12~= 4.982 , [CI: 0.469 , 1.20] p = 0.0003) however the difference was much greater. Thus suggesting that the treatment of LGG is capable of combatting *R gnavus*, despite the fact it does not statistically lead to a reduction in after treatment it significantly prevents further colonisation. This is supported in a study which investigated the metabolic disorder Hyperuricemia which results in abnormal purine metabolism, they studied whether the treatment using LGG would improve the gut microbiota, there was significant evidence for this as there was a reduction in many pathogenic bacteria including *R gnavus* [@fu2024lactobacillus].
+
+
+
+```{r, include=TRUE, echo =FALSE, warning=FALSE, eval=TRUE, message=FALSE, results=FALSE}
+
+source("/cloud/project/scripts/figure_2.R")
+
+```
+
+**Figure 2:** The abundance of pathogenic Ruminococcus gnavus found in the samples of 21 subjects, treatment using LGG showed to lead to a lesser increase in count when compared to the samples treated using the placebo (t21= 2.961, [95% CI: 56.7, 324], p =0.007).
+
+## Investigating interaction effects between gender and treatment:
+
+I hypothesised that the gender of the sample affects the efficiency of probiotic treatment, in particular that females respond more effectively by means of reducing the numbers of R gnavus in the samples taken after the treatment, there has been evidence in previous studies using female mice as a model for the probiotic efficacy of *L rhamnosus* that suggests it is more effective [@kruger2009effect]. I used a linear model estimated using the ordinary of least squares to investigate whether there was an interaction effect within the categories, group (treatment or placebo) and gender (male and female). When the stool samples were tested the difference in abundance between treatment using LGG and placebo when the pairs are held constant (t21= 2.961, [95% CI: 56.7, 324], p= 4.02 x 10-6). This indicates that the probiotic is having a positive effect on the gut microbiota as the levels of pathogenic bacteria are increasing at a slower rate when compared to that found in the group treated with the placebo.
+
+
+
+```{r, include=TRUE, echo =FALSE, warning=FALSE, eval=TRUE, message=FALSE}
+
+source("/cloud/project/scripts/figure_3.R")
+
+```
+**Figure 3** The abundance of pathogenic *Ruminococcus gnavus* found in the samples of 21 subjects, this shows a greater increase in the abundance count in men that where treated with the placebo in comparison to that found in the females. Similar results also shown in the samples treated with the placebo (t21= 2.961, [95% CI: 56.7, 324], p= 4.02 x 10-6).The points correspond to different data points and the colours to the time in which the samples were taken.
+
+## Conclusion:
+
+This study investigated the efficacy of Lactobacillus Rhamnosus on the pathogenic bacteria *Ruminococcus gnavus* that can colonise the human gut. By investigating the interactions between gender and the different treatments it allowed for analysis into the efficacy on not only R gnavus, but how it affects different genders as a way of understanding whether it is a determining factor for its ability to maintain a healthy microbiota. This investigation could provide evidence for LGG as a probiotic to have abilities in the human gastrointestinal system to minimise the effects of colonisation of harmful bacteria. In a study conducted by *Wolfe et al.,* they investigated *R gnavus* and its role play in diarrhoeal disease, they produced similar results with LGG leading to a reduced increase in multiple different pathogenic bacterium [@de2018oral]. As a next port of call it would be beneficial and of interest to further analyse L rhamnosus ability to kill pathogenic *R gnavus* as a more long-term sustainable product in order to study the longevity of the health benefits.The field of research looking into probiotics is a vital one looking forward into sustainable and efficient ways of treating an wide range of disorders in humans, providing a safe and natural way of treating once very hard to treat issues. 
+
+\newpage
+
+# References
+
+::: {#refs}
+:::
