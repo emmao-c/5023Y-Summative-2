@@ -352,17 +352,16 @@ display: none;
 </div>
 
 
-<div id="invetsigation-into-the-relationship-balh-blah-blah" class="section level1">
-<h1>Invetsigation into the relationship balh blah blah</h1>
-<div id="section" class="section level3">
-<h3></h3>
-</div>
+<div id="assessing-the-efficacy-of-the-probiotic-lactobacillus-rhamnosus-in-its-ability-to-moderate-the-number-of-the-pathogenic-bacteria-ruminococcus-gnavus-found-in-the-small-intestine." class="section level1">
+<h1>Assessing the efficacy of the probiotic Lactobacillus rhamnosus in
+its ability to moderate the number of the pathogenic bacteria
+Ruminococcus gnavus found in the small intestine.</h1>
 <div id="packages-used" class="section level3">
 <h3>Packages Used:</h3>
 <table>
 <colgroup>
-<col width="50%" />
-<col width="50%" />
+<col width="19%" />
+<col width="80%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -394,7 +393,7 @@ deleting columns</td>
 </tr>
 <tr class="even">
 <td>GGally</td>
-<td>allows for added fucntions to ggplot2 to reduce the complexity of
+<td>allows for added functions to ggplot2 to reduce the complexity of
 combining geometric objects with transformed data</td>
 </tr>
 <tr class="odd">
@@ -411,6 +410,77 @@ combining geometric objects with transformed data</td>
 </tr>
 </tbody>
 </table>
+</div>
+<div id="description" class="section level2">
+<h2>Description</h2>
+<p>An investigation into the efficacy of the probiotic Lactobacillus
+rhamnosus in regards to treating the gastrointestinal pathogenic
+bacteria Ruminococcus gnavus. Completed using a placebo group as a
+control and steps taken to investigate the effects of gender.</p>
+</div>
+<div id="data" class="section level2">
+<h2>Data</h2>
+<p>The abundance counts of <em>Ruminococcus gnavus</em> in 21 different
+stool samples from both male and female subjects</p>
+<p>##Folder structure |Name | Usage| |data| Stores the data csv file
+that is used in this analysis | |figures| containing figures used to
+understand the data |scripts| Containing scripts and RMD file used for
+final HTML file |</p>
+<div id="variables" class="section level3">
+<h3>Variables</h3>
+<table>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Subject</td>
+<td>subject ID</td>
+</tr>
+<tr class="even">
+<td>gender</td>
+<td>sample gender, Male or Female</td>
+</tr>
+<tr class="odd">
+<td>treatment</td>
+<td>Usage of placebo “Placebo” or Lactobacillus rhamnosus probiotic
+“LGG”</td>
+</tr>
+<tr class="even">
+<td>ruminococcus_gnavus_abund</td>
+<td>Read count abundance of Ruminococcus gnavus</td>
+</tr>
+<tr class="odd">
+<td>abundance_before</td>
+<td>Count abundance of Ruminococcus gnavus at timepoint 1, before</td>
+</tr>
+<tr class="even">
+<td>abundance_after</td>
+<td>Count abundance of Ruminococcus gnavus at timepoint 2, after</td>
+</tr>
+<tr class="odd">
+<td>abund_diff</td>
+<td>Difference in abundance of Ruminococcus gnavus from timepoint 1, to
+timepoint 2</td>
+</tr>
+<tr class="even">
+<td>time</td>
+<td>timepoint 1 = before, 2 = after</td>
+</tr>
+<tr class="odd">
+<td>sample</td>
+<td>sample number, 2 per patient</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 </div>
 
