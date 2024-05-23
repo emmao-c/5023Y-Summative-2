@@ -11,6 +11,7 @@ library(car)
 library(rstatix)
 library(corrplot)
 library(lmtest)
+library(gghighlight)
 #___Importing data------
 probiotic <- read_csv(here::here( "data", "probiotic.csv"))
 
@@ -68,6 +69,21 @@ prob_diff <- prob_sort %>%
   select(subject, gender, group,abundance_after,abundance_before)%>%
   mutate(abund_diff = abundance_after - abundance_before )
 glimpse(prob_diff)
+
+#___ Creating individual models for each treatment groups ---- 
+lgg_diff <- probiotic3%>%
+  group_by(subject, gender, group)%>%
+  filter(group=="LGG")%>%
+  summarise(abundance_before= ruminococcus_gnavus_abund[time==1],
+            abundance_after=ruminococcus_gnavus_abund[time==2])%>%
+  mutate(difference = abundance_after - abundance_before)
+
+placebo_diff <- probiotic3%>%
+  group_by(subject, gender, group)%>%
+  filter(group =="Placebo")%>%
+  summarise(abundance_before= ruminococcus_gnavus_abund[time==1],
+            abundance_after=ruminococcus_gnavus_abund[time==2])%>%
+  mutate(difference = abundance_after - abundance_before)
 
 #___ Checking whether the groups are equally weighted----- 
 prob_diff [-14,] %>%
@@ -239,6 +255,13 @@ broom::tidy (treatment_test, conf.int = T, conf.level = 0.95)
 confint(treatment_test)
 GGally::ggcoef_model(treatment_test,show_p_values = FALSE,conf.level = 0.95)
 
+lgg_t_test <- lm(abundance_after ~ abundance_before, data = lgg_diff)
+summary(lgg_t_test)
+broom::tidy(lgg_t_test, conf.int=T, conf.level=0.95)
+
+placebo_t_test <- lm(abundance_after ~ abundance_before, data = placebo_diff)
+summary(placebo_t_test)
+broom::tidy(placebo_t_test, conf.int=T, conf.level=0.95)
 
 #___ Independant t-test to investigate effectiveness of treatment ---- 
 
@@ -252,6 +275,62 @@ after_model <- lm(abundance_after ~  gender , data= prob_diff)
 summary(after_model)
 diff_model  <- lm(abund_diff ~  gender , data= prob_diff)
 summary(diff_model)
+broom::tidy(diff_model, conf.int=T, conf.level=0.95)
+
+#___ Figure showing before and after treatment sorted into LGG and placebo --- 
+
+pal <- c( "#A034F0", "#159700")
+
+probiotic3 %>% 
+  ggplot(aes(x = time,
+             y = ruminococcus_gnavus_abund,
+             fill = group,
+             colour = group))+
+  geom_violin(alpha = 0.2)+
+  geom_boxplot(width = 0.2,
+               alpha = 0.6)+
+  scale_fill_manual(values = pal)+
+  scale_colour_manual(values = pal)+
+  theme_classic()+
+  theme(legend.position = "none")+
+  labs(
+    x = "",
+    y = "Ruminococcus Abundance",
+    title = "The difference in the reduction of pathogenic bacteria ",
+    subtitle = "Box and violin plot of the differnce in R gnavus population according to treatment")+
+  facet_wrap(~group)
+# OUTPUT FIGURE TO FILE
+
+ggsave("figures/effect_of_treatment.png", dpi=300)
 
 
-#___ Figure showing before and after treatment sorted into LGG and 
+#___ Summary plot for data overall ---- 
+total_title <- expression(paste("The difference in ", italic("Ruminococcus ganvus"), " abundance after treatment with either LGG or a placebo group"))
+total_subtitle <- expression(paste("Count of ", italic("R. ganvus"), " from Stool Samples of 21 Subjects"))
+y <- expression(paste(italic("R. ganvus"), "Abundance"))
+
+
+pal <- c( "#A034F0", "#159700")
+
+probiotic3 %>% 
+  ggplot(aes(x = time,
+             y = ruminococcus_gnavus_abund,
+             fill = group,
+             colour = group))+  
+  geom_jitter(position = position_jitter(seed = 1, width = 0.2)) +
+
+  geom_violin(alpha = 0.2)+
+  geom_boxplot(width = 0.2,
+               alpha = 0.6)+
+  scale_fill_manual(values = pal)+
+  scale_colour_manual(values = pal)+ 
+  labs(y = y,
+       x = "Sampling Time",
+       title= total_title, 
+       subtitle = total_subtitle)+
+  theme_classic()+
+  theme(legend.position = "none")+
+  facet_grid(gender~group)
+
+
+
