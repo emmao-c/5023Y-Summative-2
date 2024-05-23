@@ -13,6 +13,10 @@
 | performance | Allows for the assessment of regression models                                                                      |
 | see         | Provides utilities for further data analysis                                                                        |
 | car         | provides functions for furthering regression analysis                                                               |
+|rstatix)| allows for pipe friendly functions for basic stats tests |
+|corrplot | a graphical display of a correlation matrix, confidence interval or general matrix|
+|lmtest| A collection of tests, data sets, and examples for diagnostic checking in linear regression models|
+
 
 ## Description 
 An investigation into the efficacy of the probiotic Lactobacillus rhamnosus in regards to treating the gastrointestinal pathogenic bacteria Ruminococcus gnavus. Completed using a placebo group as a control and steps taken to investigate the effects of gender. 
